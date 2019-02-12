@@ -4,7 +4,7 @@ from roboy_cognition_msgs.msg import RecognizedSpeech
 import speech_recognition as sr
 import threading
 
-BING_KEY = "e91e7a4512aa48b3b53b36b56bd1feb7"
+BING_KEY = ""
 
 def listener(recognizer, source, node):
     publisher = node.create_publisher(RecognizedSpeech,\
