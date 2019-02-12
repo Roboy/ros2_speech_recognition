@@ -20,7 +20,7 @@ $ source install/setup.bash
 $ cd ros2_ws/src
 $ git clone https://github.com/Roboy/ros2_speech_recognition.git
 $ cd ros2_speech_recognition
-$ python3 recognition_node.py
+$ python3 recognition_node.py # edit BING_KEY inside the script
 
 # in a separate terminal you can see the published result
 $ source ros2_ws/install/setup.bash
