@@ -4,9 +4,9 @@ from roboy_cognition_msgs.msg import RecognizedSpeech
 import speech_recognition as sr
 import threading
 from ros2_speech_recognition.recognizer import *
+from time import sleep
 
-
-BING_KEY = "e91e7a4512aa48b3b53b36b56bd1feb7"
+BING_KEY = ""
 
 def listener(source, node):
     publisher = node.create_publisher(RecognizedSpeech,\
@@ -20,9 +20,10 @@ def listener(source, node):
         msg.source = -1
 
     # with source as source:
-    while True:
-        input("Press enter to listen again...")
+    while rclpy.ok():
+        # input("Press enter to listen again...")
         #     audio = recognizer.listen(source=source)
+        sleep(1)
         try:
             text = bing.stt_with_vad(source)
             msg.text = text
@@ -46,6 +47,11 @@ def odas_recognition(node):
     for l in listeners:
         l.start()
 
+def odas_single_channel(node):
+    from ros2_speech_recognition.odas_sr_driver import Odas
+    print("waiting for odas connection")
+    o = Odas(port=10002, chunk_size=2048)
+    listener(o.channels[0], node)
 
 def mic_recognition(node):
     mic = sr.Microphone()
@@ -54,8 +60,9 @@ def mic_recognition(node):
 def main(args=None):
     rclpy.init()
     node = rclpy.create_node('odas_speech_recognition')
-    mic_recognition(node)
-    # odas_recognition(r, node) # requires RPi running odas
+    # mic_recognition(node)
+    # odas_single_channel(node) # requires RPi running odas
+    odas_recognition(node)
 
 if __name__ == '__main__':
     main()

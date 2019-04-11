@@ -25,7 +25,7 @@ class Odas():
             return self
 
         def __exit__(self, exc_type, exc_value, traceback):
-            self.stream = None
+            # self.stream = None
             self.record = False
 
     def __init__(self, port, host='0.0.0.0', sample_rate=16000, chunk_size=1024):
@@ -62,6 +62,7 @@ class Odas():
             #     self.stream.write(data[0::4].tobytes())
             for i in range(self.CHANNELS):
                 if self.channels[i].record:
+
                     self.channels[i].stream.write(data[i::4].tobytes())
 
     def __enter__(self):
@@ -70,7 +71,7 @@ class Odas():
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.stream = None
+        # self.stream = None
         self.record = False
 
     class BytesLoop:

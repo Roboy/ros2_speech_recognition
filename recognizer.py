@@ -21,7 +21,7 @@ import signal
 import pyaudio
 import traceback
 
-BING_KEY = 'e91e7a4512aa48b3b53b36b56bd1feb7'
+BING_KEY = ''
 
 
 class RequestError(Exception):
@@ -156,7 +156,7 @@ class BingVoice():
         except URLError as e:
             raise RequestError("recognition connection failed: {0}".format(e.reason))
         response_text = response.read().decode("utf-8")
-        print(response_text)
+        # print(response_text)
         result = json.loads(response_text)
 
         # return results
@@ -261,14 +261,14 @@ class BingVoice():
         FORMAT = pyaudio.paInt16
         CHANNELS = 1
         RATE = 16000
-        CHUNK_DURATION_MS = 20  # supports 10, 20 and 30 (ms)
+        CHUNK_DURATION_MS = 10  # supports 10, 20 and 30 (ms)
         PADDING_DURATION_MS = 1000
         CHUNK_SIZE = int(RATE * CHUNK_DURATION_MS / 1000)
         CHUNK_BYTES = CHUNK_SIZE * 2
         NUM_PADDING_CHUNKS = int(PADDING_DURATION_MS / CHUNK_DURATION_MS)
         NUM_WINDOW_CHUNKS = int(240 / CHUNK_DURATION_MS)
 
-        vad = webrtcvad.Vad(1)
+        vad = webrtcvad.Vad(3)
         got_a_sentence = False
         leave = False
 
@@ -279,8 +279,8 @@ class BingVoice():
             leave = True
             got_a_sentence = True
 
-        signal.signal(signal.SIGINT, handle_int)
-        global lock
+        # signal.signal(signal.SIGINT, handle_int)
+        # global lock
 
         while not leave:
             ring_buffer = collections.deque(maxlen=NUM_PADDING_CHUNKS)
@@ -296,7 +296,7 @@ class BingVoice():
             # odas.channels[0].record = True
 
             while not got_a_sentence: #and not leave:
-                chunk = source.stream.read(CHUNK_SIZE)
+                chunk = source.stream.read(CHUNK_BYTES)
                 active = vad.is_speech(chunk, RATE)
                 sys.stdout.write('1' if active else '0')
                 ring_buffer_flags[ring_buffer_index] = 1 if active else 0
@@ -333,7 +333,7 @@ class BingVoice():
                 # pdb.set_trace()
                 text = self.recognize(data, language=language, sample_rate=source.SAMPLE_RATE)
                 # pdb.set_trace()
-                print('Bing:' + text)
+                # print('Bing:' + text)
                 # stream.close()
                 return text
             except UnknownValueError:
